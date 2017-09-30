@@ -11,6 +11,7 @@ const app = choo()
 app.use(log())
 app.use(store)
 app.route('/', main)
+app.route('/p5-sketchbook', main)
 app.mount('#choo')
 
 function main(state, emit) {
