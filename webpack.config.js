@@ -10,7 +10,7 @@ const paths = {
 
 module.exports = {
   entry: paths.entry,
-
+  devtool: 'source-map',
   devServer: {
     contentBase: paths.outDir,
   },

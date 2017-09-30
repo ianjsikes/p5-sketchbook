@@ -5,6 +5,8 @@ import roomCreator from './room'
 import edgeCreator from './edge'
 
 export const dungen = opts => p => {
+  const remove = p.remove
+
   let gui
   let imgs = {}
   let floorImg, cornerImg, wallImg, corridorImg
@@ -239,5 +241,11 @@ export const dungen = opts => p => {
   }
   p.windowResized = () => {
     p.resizeCanvas(p.windowWidth, p.windowHeight)
+  }
+
+  p.remove = () => {
+    console.log('removing')
+    gui.destroy()
+    remove()
   }
 }
