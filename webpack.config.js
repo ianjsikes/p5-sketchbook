@@ -29,7 +29,12 @@ module.exports = {
 
         options: {
           presets: ['es2015'],
+          plugins: ['transform-class-properties'],
         },
+      },
+      {
+        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+        loader: 'url-loader',
       },
     ],
   },
