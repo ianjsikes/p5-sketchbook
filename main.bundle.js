@@ -69968,6 +69968,7 @@ var app = choo();
 app.use((0, _chooLog2.default)());
 app.use(store);
 app.route('/', main);
+app.route('/p5-sketchbook', main);
 app.mount('#choo');
 
 function main(state, emit) {
