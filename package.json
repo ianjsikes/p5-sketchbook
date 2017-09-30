@@ -1,0 +1,28 @@
+{
+  "name": "p5-sketchbook",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A collection of p5.js sketches",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian J Sikes <ianjsikes@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "gh-pages": "^1.0.0",
+    "html-webpack-plugin": "^2.30.1",
+    "prettier": "^1.7.2",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "dependencies": {
+    "choo": "^6.1.0",
+    "p5": "^0.5.14"
+  }
+}
