@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -136,7 +136,7 @@ function isBuffer(b) {
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var util = __webpack_require__(28);
+var util = __webpack_require__(35);
 var hasOwn = Object.prototype.hasOwnProperty;
 var pSlice = Array.prototype.slice;
 var functionsHaveNames = (function () {
@@ -69877,11 +69877,347 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(23)
+"use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VEvent = function () {
+  function VEvent(point, siteEvent) {
+    _classCallCheck(this, VEvent);
+
+    this.point = point;
+    this.siteEvent = siteEvent;
+    this.x = point.x;
+    this.y = point.y;
+    this.arc = null;
+  }
+
+  _createClass(VEvent, [{
+    key: "compareTo",
+    value: function compareTo(other) {
+      return this.y > other.y ? -1 : 1;
+    }
+  }]);
+
+  return VEvent;
+}();
+
+exports.default = VEvent;
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _point = __webpack_require__(11);
+
+var _point2 = _interopRequireDefault(_point);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VEdge = function () {
+  function VEdge() {
+    var s = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _point2.default();
+    var a = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new _point2.default();
+    var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new _point2.default();
+
+    _classCallCheck(this, VEdge);
+
+    this.start = s;
+    this.left = a;
+    this.right = b;
+    this.neighbor = null;
+    this.end = new _point2.default();
+
+    this.f = (b.x - a.x) / (b.y - a.y);
+    this.g = s.y - this.f * s.x;
+    this.direction = {
+      x: b.y - a.y,
+      y: -(b.x - a.x)
+    };
+
+    this.intersected = false;
+    this.counted = false;
+    console.log("Creating edge: ", this.toString());
+  }
+
+  _createClass(VEdge, [{
+    key: "toString",
+    value: function toString() {
+      return "VEdge : " + this.start.toString() + ", " + this.end.toString() + ", intersected : " + this.intersected + ", counted : " + this.counted + ", f : " + this.f.toFixed(2) + ", g : " + this.g.toFixed(2) + ", neighbor : " + !!this.neighbor;
+    }
+  }], [{
+    key: "intersection",
+    value: function intersection(a, b) {
+      var x = (b.g - a.g) / (a.f - b.f);
+      var y = a.f * x + a.g;
+
+      if ((x - a.start.x) / a.direction.x < 0) return null;
+      if ((y - a.start.y) / a.direction.y < 0) return null;
+
+      if ((x - b.start.x) / b.direction.x < 0) return null;
+      if ((y - b.start.y) / b.direction.y < 0) return null;
+
+      return { x: x, y: y };
+    }
+  }]);
+
+  return VEdge;
+}();
+/*
+String toString(){
+    return "VEdge : " + start + ", " + end 
+         + ", intersected : " + intersected 
+         + ", iCounted : " + iCounted 
+         + ", f : " + f + ", g : " + g
+         + ", neighbour : " + (neighbour != null);
+}
+
+PVector getEdgeIntersection(VEdge a, VEdge b) {
+    float x = (b.g - a.g) / (a.f - b.f);
+    float y = a.f * x + a.g;
+
+    if ((x - a.start.x)/a.direction.x < 0) return null;
+    if ((y - a.start.y)/a.direction.y < 0) return null;
+
+    if ((x - b.start.x)/b.direction.x < 0) return null;
+    if ((y - b.start.y)/b.direction.y < 0) return null;	
+
+    PVector p = new PVector(x, y);		
+    points.add(p);
+    return p;
+}
+*/
+
+
+exports.default = VEdge;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Point = function () {
+  function Point() {
+    var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+    _classCallCheck(this, Point);
+
+    this.x = x;
+    this.y = y;
+  }
+
+  _createClass(Point, [{
+    key: "toString",
+    value: function toString() {
+      return "(" + this.x.toFixed(2) + ", " + this.y.toFixed(2) + ")";
+    }
+  }]);
+
+  return Point;
+}();
+
+exports.default = Point;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VParabola = function () {
+  function VParabola(site) {
+    _classCallCheck(this, VParabola);
+
+    this.site = site;
+    this.left = null;
+    this.right = null;
+    this.parent = null;
+    this.edge = null;
+    this.circleEvent = null;
+    this.isLeaf = !!site;
+  }
+
+  _createClass(VParabola, [{
+    key: "setLeft",
+    value: function setLeft(parabola) {
+      this.left = parabola;
+      parabola.parent = this;
+    }
+  }, {
+    key: "setRight",
+    value: function setRight(parabola) {
+      this.right = parabola;
+      parabola.parent = this;
+    }
+  }], [{
+    key: "getY",
+    value: function getY(p /* focus point */, x /* x-coordinate */, ly /* beachline */) {
+      var dp = 2 * (p.y - ly);
+      var a1 = 1 / dp;
+      var b1 = -2 * p.x / dp;
+      var c1 = ly + dp / 4 + p.x * p.x / dp;
+
+      return a1 * x * x + b1 * x + c1;
+    }
+  }, {
+    key: "getLeft",
+    value: function getLeft(p) {
+      return VParabola.getLeftChild(VParabola.getLeftParent(p));
+    }
+  }, {
+    key: "getRight",
+    value: function getRight(p) {
+      return VParabola.getRightChild(VParabola.getRightParent(p));
+    }
+  }, {
+    key: "getLeftParent",
+    value: function getLeftParent(p) {
+      var par = p.parent;
+      var pLast = p;
+      while (par.left === pLast) {
+        if (par.parent == null) return null;
+        pLast = par;
+        par = par.parent;
+      }
+      return par;
+    }
+  }, {
+    key: "getRightParent",
+    value: function getRightParent(p) {
+      var par = p.parent;
+      var pLast = p;
+      while (par.right === pLast) {
+        if (par.parent == null) return null;
+        pLast = par;
+        par = par.parent;
+      }
+      return par;
+    }
+  }, {
+    key: "getLeftChild",
+    value: function getLeftChild(p) {
+      if (p == null) return null;
+      var par = p.left;
+      while (!par.isLeaf) {
+        par = par.right;
+      }return par;
+    }
+  }, {
+    key: "getRightChild",
+    value: function getRightChild(p) {
+      if (p == null) return null;
+      var par = p.right;
+      while (!par.isLeaf) {
+        par = par.left;
+      }return par;
+    }
+  }]);
+
+  return VParabola;
+}();
+
+exports.default = VParabola;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VQueue = function () {
+  function VQueue() {
+    _classCallCheck(this, VQueue);
+
+    this.items = [];
+  }
+
+  _createClass(VQueue, [{
+    key: "enqueue",
+    value: function enqueue(event) {
+      for (var i = 0; i < this.items.length; i++) {
+        if (this.items[i].y > event.y) {
+          this.items.splice(i, 0, event);
+          return;
+        }
+      }
+
+      this.items.push(event);
+    }
+  }, {
+    key: "dequeue",
+    value: function dequeue() {
+      if (this.items.length) {
+        return this.items.shift();
+      }
+    }
+  }, {
+    key: "isEmpty",
+    value: function isEmpty() {
+      return this.items.length === 0;
+    }
+  }]);
+
+  return VQueue;
+}();
+
+exports.default = VQueue;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(30)
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var onIdle = __webpack_require__(4)
@@ -69928,7 +70264,7 @@ function noop (cb) {
 
 
 /***/ }),
-/* 11 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69940,19 +70276,19 @@ var _p = __webpack_require__(1);
 
 var _p2 = _interopRequireDefault(_p);
 
-__webpack_require__(12);
+__webpack_require__(17);
 
-__webpack_require__(13);
+__webpack_require__(18);
 
-var _sketches = __webpack_require__(14);
+var _sketches = __webpack_require__(19);
 
 var _sketches2 = _interopRequireDefault(_sketches);
 
-var _dropdown = __webpack_require__(22);
+var _dropdown = __webpack_require__(29);
 
 var _dropdown2 = _interopRequireDefault(_dropdown);
 
-var _chooLog = __webpack_require__(26);
+var _chooLog = __webpack_require__(33);
 
 var _chooLog2 = _interopRequireDefault(_chooLog);
 
@@ -69960,8 +70296,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-var html = __webpack_require__(9);
-var choo = __webpack_require__(34);
+var html = __webpack_require__(14);
+var choo = __webpack_require__(41);
 
 
 var app = choo();
@@ -70008,7 +70344,7 @@ function store(state, emitter) {
 }
 
 /***/ }),
-/* 12 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.dom.js v0.3.4 Aug 11, 2017 */
@@ -72265,7 +72601,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.dom.js v0
 
 
 /***/ }),
-/* 13 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -77693,7 +78029,7 @@ p5.prototype._warn = function(message) {
 
 
 /***/ }),
-/* 14 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77703,26 +78039,32 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _dungen = __webpack_require__(15);
+var _dungen = __webpack_require__(20);
 
-var _test = __webpack_require__(20);
+var _test = __webpack_require__(25);
 
 var _test2 = _interopRequireDefault(_test);
 
-var _tenPrint = __webpack_require__(21);
+var _tenPrint = __webpack_require__(26);
 
 var _tenPrint2 = _interopRequireDefault(_tenPrint);
+
+var _voronoi = __webpack_require__(27);
+
+var _voronoi2 = _interopRequireDefault(_voronoi);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import { gravity } from './gravity';
 
-var sketches = [{ label: '10 Print', value: _tenPrint2.default }, { label: 'DunGen', value: _dungen.dungen }];
+var sketches = [{ label: "Voronoi", value: _voronoi2.default }, { label: "10 Print", value: _tenPrint2.default }, { label: "DunGen", value: _dungen.dungen
+  // { label: 'Gravity', value: gravity },
+}];
 
 exports.default = sketches;
 
 /***/ }),
-/* 15 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77733,19 +78075,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.dungen = undefined;
 
-var _delaunayFast = __webpack_require__(16);
+var _delaunayFast = __webpack_require__(21);
 
 var _delaunayFast2 = _interopRequireDefault(_delaunayFast);
 
-var _dat = __webpack_require__(17);
+var _dat = __webpack_require__(22);
 
 var _dat2 = _interopRequireDefault(_dat);
 
-var _room = __webpack_require__(18);
+var _room = __webpack_require__(23);
 
 var _room2 = _interopRequireDefault(_room);
 
-var _edge = __webpack_require__(19);
+var _edge = __webpack_require__(24);
 
 var _edge2 = _interopRequireDefault(_edge);
 
@@ -78007,7 +78349,7 @@ var dungen = exports.dungen = function dungen(opts) {
 };
 
 /***/ }),
-/* 16 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Delaunay;
@@ -78247,7 +78589,7 @@ var Delaunay;
 
 
 /***/ }),
-/* 17 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -82634,7 +82976,7 @@ return /******/ (function(modules) { // webpackBootstrap
 //# sourceMappingURL=dat.gui.js.map
 
 /***/ }),
-/* 18 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82734,7 +83076,7 @@ var roomCreator = function roomCreator(p) {
 exports.default = roomCreator;
 
 /***/ }),
-/* 19 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82853,7 +83195,7 @@ exports.default = edgeCreator;
 //   }
 
 /***/ }),
-/* 20 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82888,7 +83230,7 @@ var test = function test(opts) {
 exports.default = test;
 
 /***/ }),
-/* 21 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82965,7 +83307,516 @@ var tenPrint = function tenPrint(opts) {
 exports.default = tenPrint;
 
 /***/ }),
-/* 22 */
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _event = __webpack_require__(9);
+
+var _event2 = _interopRequireDefault(_event);
+
+var _edge = __webpack_require__(10);
+
+var _edge2 = _interopRequireDefault(_edge);
+
+var _parabola = __webpack_require__(12);
+
+var _parabola2 = _interopRequireDefault(_parabola);
+
+var _beachline = __webpack_require__(28);
+
+var _beachline2 = _interopRequireDefault(_beachline);
+
+var _queue = __webpack_require__(13);
+
+var _queue2 = _interopRequireDefault(_queue);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var voronoi = function voronoi(opts) {
+  return function (p) {
+    var WIDTH = opts.width || p.windowWidth,
+        HEIGHT = opts.height || p.windowHeight;
+    var points = [];
+    var NUM_POINTS = 20;
+    // let beachline = new VBeachline();
+    var beachline = void 0;
+
+    p.setup = function () {
+      for (var i = 0; i < NUM_POINTS; i++) {
+        points.push({
+          x: Math.random() * WIDTH,
+          y: Math.random() * HEIGHT
+        });
+      }
+      p.createCanvas(opts.width || p.windowWidth, opts.height || p.windowHeight);
+      beachline = new _beachline2.default(points, WIDTH, HEIGHT, p);
+      p.frameRate(20);
+    };
+
+    p.draw = function () {
+      p.background(255);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = beachline.sites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var point = _step.value;
+
+          p.ellipse(point.x, point.y, 2, 2);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      beachline.update();
+      beachline.draw();
+    };
+  };
+};
+
+exports.default = voronoi;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _edge = __webpack_require__(10);
+
+var _edge2 = _interopRequireDefault(_edge);
+
+var _parabola = __webpack_require__(12);
+
+var _parabola2 = _interopRequireDefault(_parabola);
+
+var _event = __webpack_require__(9);
+
+var _event2 = _interopRequireDefault(_event);
+
+var _queue = __webpack_require__(13);
+
+var _queue2 = _interopRequireDefault(_queue);
+
+var _point = __webpack_require__(11);
+
+var _point2 = _interopRequireDefault(_point);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VBeachline = function () {
+  function VBeachline(sites, width, height, p) {
+    _classCallCheck(this, VBeachline);
+
+    this.ly = 0;
+
+    this.p = p;
+
+    this.width = width;
+    this.height = height;
+
+    this.done = false;
+    this.root = null;
+    this.sites = sites.map(function (_ref) {
+      var x = _ref.x,
+          y = _ref.y;
+      return new _point2.default(x, y);
+    });
+
+    this.points = [];
+    this.deleted = [];
+    this.queue = new _queue2.default();
+    this.edges = [];
+
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.sites[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var site = _step.value;
+
+        this.queue.enqueue(new _event2.default(site, true));
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
+
+  _createClass(VBeachline, [{
+    key: "update",
+    value: function update() {
+      if (!this.done) {
+        if (!this.queue.isEmpty()) {
+          var event = this.queue.dequeue();
+          this.ly = event.point.y;
+
+          var deletedIndex = this.deleted.indexOf(event);
+          if (deletedIndex !== -1) {
+            this.deleted.splice(deletedIndex, 1);
+          } else if (event.siteEvent) {
+            this.insert(event.point);
+          } else {
+            this.remove(event);
+          }
+          this.finishEdge(this.root);
+        } else {
+          this.done = true;
+          this.finishEdge(this.root);
+
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = this.edges[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var edge = _step2.value;
+
+              if (!!edge.neighbor) {
+                edge.start = edge.neighbor.end;
+                edge.neighbor = null;
+              }
+              console.log(edge.toString());
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        }
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      this.p.stroke(200, 100, 50);
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.edges[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var edge = _step3.value;
+
+          var p0 = edge.start;
+          var p1 = edge.end;
+
+          if (!!edge.neighbor) {
+            p0 = edge.neighbor.end;
+          }
+          this.p.line(p0.x, p0.y, p1.x, p1.y);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      this.p.stroke(50, 100, 200);
+      this.p.line(0, this.ly, this.width, this.ly);
+    }
+  }, {
+    key: "insert",
+    value: function insert(point) {
+      console.log("Inserting point: (" + point.x.toFixed(2) + ", " + point.y.toFixed(2) + ")");
+      if (!this.root) {
+        console.log("Inserting as root");
+        this.root = new _parabola2.default(point);
+        return;
+      }
+
+      if (this.root.isLeaf && Math.abs(this.root.site.y - point.y) < 1) {
+        console.log("Edge case, very close to current root", this.root, point);
+        console.log("root y", this.root.site.y);
+        console.log("point y", point.y);
+        console.log("sub", this.root.site.y - point.y);
+        console.log("bool", this.root.site.y - point.y < 1);
+        this.root.isLeaf = false;
+        this.root.setLeft(new _parabola2.default(this.root.site));
+        this.root.setRight(new _parabola2.default(point));
+        var s = new _point2.default((this.root.site.x + point.x) / 2, point.y);
+        this.points.push(s);
+        if (point.x > this.root.site.x) {
+          this.root.edge = new _edge2.default(s, this.root.site, point);
+        } else {
+          this.root.edge = new _edge2.default(s, point, this.root.site);
+        }
+        this.edges.push(this.root.edge);
+        return;
+      }
+
+      var par = this.lookup(point.x);
+
+      if (par.circleEvent != null) {
+        console.log("Circle event");
+        if (!this.deleted.includes(par.circleEvent)) {
+          this.deleted.push(par.circleEvent);
+        }
+        par.circleEvent = null;
+      }
+
+      var start = new _point2.default(point.x, _parabola2.default.getY(par.site, point.x, this.ly));
+      this.points.push(start);
+
+      var edgeLeft = new _edge2.default(start, par.site, point);
+      var edgeRight = new _edge2.default(start, point, par.site);
+
+      edgeLeft.neighbor = edgeRight;
+      this.edges.push(edgeLeft);
+
+      par.edge = edgeRight;
+      par.isLeaf = false;
+
+      var p0 = new _parabola2.default(par.site);
+      var p1 = new _parabola2.default(point);
+      var p2 = new _parabola2.default(par.site);
+
+      par.setRight(p2);
+      par.setLeft(new _parabola2.default());
+      par.left.edge = edgeLeft;
+
+      par.left.setLeft(p0);
+      par.left.setRight(p1);
+
+      this.checkCircle(p0);
+      this.checkCircle(p2);
+    }
+  }, {
+    key: "remove",
+    value: function remove(e) {
+      var p1 = e.arc;
+
+      var xl = _parabola2.default.getLeftParent(p1);
+      var xr = _parabola2.default.getRightParent(p1);
+
+      var p0 = _parabola2.default.getLeftChild(xl);
+      var p2 = _parabola2.default.getRightChild(xr);
+
+      if (p0 === p2) {
+        console.error("Parabola left and right have the same focus");
+      }
+
+      if (!!p0.circleEvent) {
+        if (!this.deleted.includes(p0.circleEvent)) {
+          this.deleted.push(p0.circleEvent);
+        }
+        p0.circleEvent = null;
+      }
+
+      if (!!p2.circleEvent) {
+        if (!this.deleted.includes(p2.circleEvent)) {
+          this.deleted.push(p2.circleEvent);
+        }
+        p2.circleEvent = null;
+      }
+
+      var p = new _point2.default(e.point.x, _parabola2.default.getY(p1.site, e.point.x, this.ly));
+      this.points.push(p);
+
+      xl.edge.end = p;
+      xr.edge.end = p;
+
+      var higher = new _parabola2.default();
+      var par = p1;
+      while (par !== this.root) {
+        par = par.parent;
+        if (par === xl) higher = xl;
+        if (par === xr) higher = xr;
+      }
+
+      higher.edge = new _edge2.default(p, p0.site, p2.site);
+      this.edges.push(higher.edge);
+
+      var gparent = p1.parent.parent;
+      if (p1.parent.left === p1) {
+        if (gparent.left === p1.parent) gparent.left = p1.parent.right;
+        if (gparent.right === p1.parent) gparent.right = p1.parent.right;
+      } else {
+        if (gparent.left === p1.parent) gparent.left = p1.parent.left;
+        if (gparent.right === p1.parent) gparent.right = p1.parent.left;
+      }
+
+      this.checkCircle(p0);
+      this.checkCircle(p2);
+    }
+  }, {
+    key: "lookup",
+    value: function lookup(x) {
+      var par = this.root;
+      var xNew = 0;
+
+      while (!par.isLeaf) {
+        xNew = this.getXOfEdge(par, this.ly);
+        if (xNew > x) par = par.left;else par = par.right;
+      }
+
+      return par;
+    }
+  }, {
+    key: "getXOfEdge",
+    value: function getXOfEdge(par, y) {
+      var left = _parabola2.default.getLeftChild(par);
+      var right = _parabola2.default.getRightChild(par);
+
+      var p = left.site;
+      var r = right.site;
+
+      var dp = 2 * (y - p.y);
+      var a1 = 1 / dp;
+      var b1 = -2 * p.x / dp;
+      var c1 = y + dp / 4 + p.x * p.x / dp;
+
+      dp = 2 * (y - r.y);
+      var a2 = 1 / dp;
+      var b2 = -2 * r.x / dp;
+      var c2 = -this.ly + dp / 4 + r.x * r.x / dp;
+
+      var a = a1 - a2;
+      var b = b1 - b2;
+      var c = c1 - c2;
+
+      var disc = b * b - 4 * a * c;
+      var x1 = (-b + Math.sqrt(disc)) / (2 * a);
+      var x2 = (-b - Math.sqrt(disc)) / (2 * a);
+
+      var ry = void 0;
+      if (p.y > r.y) ry = Math.max(x1, x2);else ry = Math.min(x1, x2);
+
+      return ry;
+    }
+  }, {
+    key: "checkCircle",
+    value: function checkCircle(par) {
+      console.log("checking circle", par);
+      var leftParent = _parabola2.default.getLeftParent(par);
+      var rightParent = _parabola2.default.getRightParent(par);
+
+      var a = _parabola2.default.getLeftChild(leftParent);
+      var c = _parabola2.default.getRightChild(rightParent);
+
+      if (!a || !c || a.site === c.site) return;
+
+      var s = _edge2.default.intersection(leftParent.edge, rightParent.edge);
+      if (!s) return;
+
+      var dx = a.site.x - s.x;
+      var dy = a.site.y - s.y;
+
+      var d = Math.sqrt(dx * dx + dy * dy);
+
+      if (s.y - d >= this.ly) {
+        return;
+      }
+
+      var event = new _event2.default(new _point2.default(s.x, d - s.y), false);
+      this.points.push(event.point);
+      par.circleEvent = event;
+      event.arc = par;
+      this.queue.enqueue(event, false);
+    }
+  }, {
+    key: "finishEdge",
+    value: function finishEdge(n /* Parabola */) {
+      if (n.isLeaf) return;
+
+      var mx = void 0;
+      if (n.edge.direction.x > 0) {
+        mx = Math.max(this.width, n.edge.start.x + 10);
+      } else {
+        mx = Math.min(0, n.edge.start.x - 10);
+      }
+
+      var end = new _point2.default(mx, mx * n.edge.f + n.edge.g);
+      n.edge.end = end;
+      this.points.push(end);
+
+      this.finishEdge(n.left);
+      this.finishEdge(n.right);
+    }
+
+    /*
+    // Recursively finishes all infinite edges in the tree
+    void finishEdge(VParabola n) {
+      if (n.isLeaf) {
+        return;
+      }
+      float mx;
+      if (n.edge.direction.x > 0.0)	mx = max(width, 	n.edge.start.x + 10);
+      else							mx = min(0.0, 		n.edge.start.x - 10);
+       PVector end = new PVector(mx, mx * n.edge.f + n.edge.g); 
+      n.edge.end = end;
+      points.add(end);
+       finishEdge(n.left() );
+      finishEdge(n.right());
+    }
+    */
+
+  }]);
+
+  return VBeachline;
+}();
+
+exports.default = VBeachline;
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -82995,7 +83846,7 @@ exports.default = function (state, emit) {
   return state.open ? open : closed;
 };
 
-var _html = __webpack_require__(9);
+var _html = __webpack_require__(14);
 
 var _html2 = _interopRequireDefault(_html);
 
@@ -83004,10 +83855,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 /***/ }),
-/* 23 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hyperx = __webpack_require__(24)
+var hyperx = __webpack_require__(31)
 
 var trailingNewlineRegex = /\n[\s]+$/
 var leadingNewlineRegex = /^\n[\s]+/
@@ -83240,10 +84091,10 @@ module.exports.createElement = belCreateElement
 
 
 /***/ }),
-/* 24 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var attrToProp = __webpack_require__(25)
+var attrToProp = __webpack_require__(32)
 
 var VAR = 0, TEXT = 1, OPEN = 2, CLOSE = 3, ATTR = 4
 var ATTR_KEY = 5, ATTR_KEY_W = 6
@@ -83524,7 +84375,7 @@ function selfClosing (tag) { return closeRE.test(tag) }
 
 
 /***/ }),
-/* 25 */
+/* 32 */
 /***/ (function(module, exports) {
 
 module.exports = attributeToProperty
@@ -83549,13 +84400,13 @@ function attributeToProperty (h) {
 
 
 /***/ }),
-/* 26 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nanologger = __webpack_require__(27)
+var nanologger = __webpack_require__(34)
 var assert = __webpack_require__(0)
 
-var ChooInstrument = __webpack_require__(32)
+var ChooInstrument = __webpack_require__(39)
 
 module.exports = logger
 
@@ -83640,7 +84491,7 @@ function logger (opts) {
 
 
 /***/ }),
-/* 27 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(0)
@@ -83810,7 +84661,7 @@ function pad (str) {
 
 
 /***/ }),
-/* 28 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -84338,7 +85189,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(30);
+exports.isBuffer = __webpack_require__(37);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -84382,7 +85233,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(31);
+exports.inherits = __webpack_require__(38);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -84400,10 +85251,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(29)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(36)))
 
 /***/ }),
-/* 29 */
+/* 36 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -84593,7 +85444,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 30 */
+/* 37 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -84604,7 +85455,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 31 */
+/* 38 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -84633,10 +85484,10 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 32 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var onPerformance = __webpack_require__(33)
+var onPerformance = __webpack_require__(40)
 var onIdle = __webpack_require__(4)
 var assert = __webpack_require__(0)
 
@@ -84784,7 +85635,7 @@ function sumDurations (timings) {
 
 
 /***/ }),
-/* 33 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var onIdle = __webpack_require__(4)
@@ -84846,19 +85697,19 @@ function onPerformance (cb) {
 
 
 /***/ }),
-/* 34 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var scrollToAnchor = __webpack_require__(35)
-var documentReady = __webpack_require__(36)
-var nanolocation = __webpack_require__(37)
-var nanotiming = __webpack_require__(10)
-var nanorouter = __webpack_require__(38)
-var nanomorph = __webpack_require__(42)
-var nanoquery = __webpack_require__(46)
-var nanohref = __webpack_require__(47)
-var nanoraf = __webpack_require__(48)
-var nanobus = __webpack_require__(49)
+var scrollToAnchor = __webpack_require__(42)
+var documentReady = __webpack_require__(43)
+var nanolocation = __webpack_require__(44)
+var nanotiming = __webpack_require__(15)
+var nanorouter = __webpack_require__(45)
+var nanomorph = __webpack_require__(49)
+var nanoquery = __webpack_require__(53)
+var nanohref = __webpack_require__(54)
+var nanoraf = __webpack_require__(55)
+var nanobus = __webpack_require__(56)
 var assert = __webpack_require__(0)
 var xtend = __webpack_require__(3)
 
@@ -85047,7 +85898,7 @@ Choo.prototype.toString = function (location, state) {
 
 
 /***/ }),
-/* 35 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = scrollToAnchor
@@ -85063,7 +85914,7 @@ function scrollToAnchor (anchor, options) {
 
 
 /***/ }),
-/* 36 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85087,7 +85938,7 @@ function ready (callback) {
 
 
 /***/ }),
-/* 37 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(0)
@@ -85103,10 +85954,10 @@ function nanolocation () {
 
 
 /***/ }),
-/* 38 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wayfarer = __webpack_require__(39)
+var wayfarer = __webpack_require__(46)
 
 var isLocalFile = (/file:\/\//.test(typeof window === 'object' &&
   window.location && window.location.origin)) // electron support
@@ -85167,11 +86018,11 @@ function pathname (route, isElectron) {
 
 
 /***/ }),
-/* 39 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(0)
-var trie = __webpack_require__(40)
+var trie = __webpack_require__(47)
 
 module.exports = Wayfarer
 
@@ -85238,10 +86089,10 @@ function Wayfarer (dft) {
 
 
 /***/ }),
-/* 40 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mutate = __webpack_require__(41)
+var mutate = __webpack_require__(48)
 var assert = __webpack_require__(0)
 var xtend = __webpack_require__(3)
 
@@ -85381,7 +86232,7 @@ Trie.prototype.mount = function (route, trie) {
 
 
 /***/ }),
-/* 41 */
+/* 48 */
 /***/ (function(module, exports) {
 
 module.exports = extend
@@ -85404,11 +86255,11 @@ function extend(target) {
 
 
 /***/ }),
-/* 42 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assert = __webpack_require__(43)
-var morph = __webpack_require__(44)
+var assert = __webpack_require__(50)
+var morph = __webpack_require__(51)
 
 var TEXT_NODE = 3
 // var DEBUG = false
@@ -85559,7 +86410,7 @@ function same (a, b) {
 
 
 /***/ }),
-/* 43 */
+/* 50 */
 /***/ (function(module, exports) {
 
 assert.notEqual = notEqual
@@ -85587,10 +86438,10 @@ function assert (t, m) {
 
 
 /***/ }),
-/* 44 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var events = __webpack_require__(45)
+var events = __webpack_require__(52)
 var eventsLength = events.length
 
 var ELEMENT_NODE = 1
@@ -85757,7 +86608,7 @@ function updateAttribute (newNode, oldNode, name) {
 
 
 /***/ }),
-/* 45 */
+/* 52 */
 /***/ (function(module, exports) {
 
 module.exports = [
@@ -85805,7 +86656,7 @@ module.exports = [
 
 
 /***/ }),
-/* 46 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var reg = new RegExp('([^?=&]+)(=([^&]*))?', 'g')
@@ -85827,7 +86678,7 @@ function qs (url) {
 
 
 /***/ }),
-/* 47 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(0)
@@ -85873,7 +86724,7 @@ function href (cb, root) {
 
 
 /***/ }),
-/* 48 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85915,11 +86766,11 @@ function nanoraf (render, raf) {
 
 
 /***/ }),
-/* 49 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var splice = __webpack_require__(50)
-var nanotiming = __webpack_require__(10)
+var splice = __webpack_require__(57)
+var nanotiming = __webpack_require__(15)
 var assert = __webpack_require__(0)
 
 module.exports = Nanobus
@@ -86073,7 +86924,7 @@ Nanobus.prototype._emit = function (arr, eventName, data, uuid) {
 
 
 /***/ }),
-/* 50 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
