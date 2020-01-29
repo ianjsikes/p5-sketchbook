@@ -1,12 +1,14 @@
+import Point from "./point";
+
 export default class VEdge {
-  constructor(s /* startPoint */, a /* leftPoint */, b /* rightPoint */) {
+  constructor(s = new Point(), a = new Point(), b = new Point()) {
     this.start = s;
     this.left = a;
     this.right = b;
     this.neighbor = null;
-    this.end = null;
+    this.end = new Point();
 
-    this.f = (b.x - a.x) / (a.y - b.y);
+    this.f = (b.x - a.x) / (b.y - a.y);
     this.g = s.y - this.f * s.x;
     this.direction = {
       x: b.y - a.y,
@@ -15,6 +17,7 @@ export default class VEdge {
 
     this.intersected = false;
     this.counted = false;
+    console.log(`Creating edge: `, this.toString());
   }
 
   static intersection(a, b) {
@@ -31,14 +34,10 @@ export default class VEdge {
   }
 
   toString() {
-    return `VEdge : (${this.start.x.toFixed(2)}, ${this.start.y.toFixed(
+    return `VEdge : ${this.start.toString()}, ${this.end.toString()}, intersected : ${this
+      .intersected}, counted : ${this.counted}, f : ${this.f.toFixed(
       2
-    )}), (${this.end.x.toFixed(2)}, ${this.end.y.toFixed(
-      2
-    )}), intersected : ${this.intersected}, counted : ${this
-      .counted}, f : ${this.f.toFixed(2)}, g : ${this.g.toFixed(
-      2
-    )}, neighbor : ${!!this.neighbor}`;
+    )}, g : ${this.g.toFixed(2)}, neighbor : ${!!this.neighbor}`;
   }
 }
 /*

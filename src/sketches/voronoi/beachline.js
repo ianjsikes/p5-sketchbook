@@ -2,22 +2,27 @@ import VEdge from "./edge";
 import VParabola from "./parabola";
 import VEvent from "./event";
 import VQueue from "./queue";
+import Point from "./point";
 
 export default class VBeachline {
   constructor(sites, width, height, p) {
+    this.ly = 0;
+
     this.p = p;
+
     this.width = width;
     this.height = height;
 
-    this.root = null;
-    this.deleted = [];
-    this.points = [];
-    this.sites = sites;
-    this.edges = [];
-    this.ly = 0;
     this.done = false;
+    this.root = null;
+    this.sites = sites.map(({ x, y }) => new Point(x, y));
+
+    this.points = [];
+    this.deleted = [];
     this.queue = new VQueue();
-    for (const site of sites) {
+    this.edges = [];
+
+    for (const site of this.sites) {
       this.queue.enqueue(new VEvent(site, true));
     }
   }
@@ -53,6 +58,7 @@ export default class VBeachline {
   }
 
   draw() {
+    this.p.stroke(200, 100, 50);
     for (const edge of this.edges) {
       let p0 = edge.start;
       let p1 = edge.end;
@@ -63,43 +69,15 @@ export default class VBeachline {
       this.p.line(p0.x, p0.y, p1.x, p1.y);
     }
 
+    this.p.stroke(50, 100, 200);
     this.p.line(0, this.ly, this.width, this.ly);
   }
-
-  /*
- void draw(boolean showDelaunay) {
-    for (VEdge edge : edges) {
-      stroke(200);
-      PVector p0 = edge.start, p1 = edge.end;
-      if (edge.neighbour != null) {
-        p0 = edge.neighbour.end;
-      }
-      line(p0.x, p0.y, p1.x, p1.y);
-      
-      // Delaunay Triangulation
-      if(showDelaunay){
-        stroke(0, 0, 255);
-        line(edge.left.x, edge.left.y, edge.right.x, edge.right.y);
-      }
-    }
-    stroke(200, 255, 200);
-    line(0, ly, width, ly);
-    stroke(0, 255, 0);
-    drawBeachline();
-
-    noStroke();
-    fill(255);
-    for (PVector p : places) { 
-      ellipse(p.x, p.y, 6, 6);
-    }
-}
-  */
 
   insert(point) {
     console.log(
       `Inserting point: (${point.x.toFixed(2)}, ${point.y.toFixed(2)})`
     );
-    if (this.root === null) {
+    if (!this.root) {
       console.log("Inserting as root");
       this.root = new VParabola(point);
       return;
@@ -114,7 +92,7 @@ export default class VBeachline {
       this.root.isLeaf = false;
       this.root.setLeft(new VParabola(this.root.site));
       this.root.setRight(new VParabola(point));
-      const s = { x: (this.root.site.x + point.x) / 2, y: point.y };
+      const s = new Point((this.root.site.x + point.x) / 2, point.y);
       this.points.push(s);
       if (point.x > this.root.site.x) {
         this.root.edge = new VEdge(s, this.root.site, point);
@@ -129,11 +107,13 @@ export default class VBeachline {
 
     if (par.circleEvent != null) {
       console.log("Circle event");
-      this.deleted.push(par.circleEvent);
+      if (!this.deleted.includes(par.circleEvent)) {
+        this.deleted.push(par.circleEvent);
+      }
       par.circleEvent = null;
     }
 
-    let start = { x: point.x, y: VParabola.getY(par.site, point.x, this.ly) };
+    let start = new Point(point.x, VParabola.getY(par.site, point.x, this.ly));
     this.points.push(start);
 
     let edgeLeft = new VEdge(start, par.site, point);
@@ -160,7 +140,62 @@ export default class VBeachline {
     this.checkCircle(p2);
   }
 
-  remove() {}
+  remove(e) {
+    let p1 = e.arc;
+
+    let xl = VParabola.getLeftParent(p1);
+    let xr = VParabola.getRightParent(p1);
+
+    let p0 = VParabola.getLeftChild(xl);
+    let p2 = VParabola.getRightChild(xr);
+
+    if (p0 === p2) {
+      console.error("Parabola left and right have the same focus");
+    }
+
+    if (!!p0.circleEvent) {
+      if (!this.deleted.includes(p0.circleEvent)) {
+        this.deleted.push(p0.circleEvent);
+      }
+      p0.circleEvent = null;
+    }
+
+    if (!!p2.circleEvent) {
+      if (!this.deleted.includes(p2.circleEvent)) {
+        this.deleted.push(p2.circleEvent);
+      }
+      p2.circleEvent = null;
+    }
+
+    let p = new Point(e.point.x, VParabola.getY(p1.site, e.point.x, this.ly));
+    this.points.push(p);
+
+    xl.edge.end = p;
+    xr.edge.end = p;
+
+    let higher = new VParabola();
+    let par = p1;
+    while (par !== this.root) {
+      par = par.parent;
+      if (par === xl) higher = xl;
+      if (par === xr) higher = xr;
+    }
+
+    higher.edge = new VEdge(p, p0.site, p2.site);
+    this.edges.push(higher.edge);
+
+    let gparent = p1.parent.parent;
+    if (p1.parent.left === p1) {
+      if (gparent.left === p1.parent) gparent.left = p1.parent.right;
+      if (gparent.right === p1.parent) gparent.right = p1.parent.right;
+    } else {
+      if (gparent.left === p1.parent) gparent.left = p1.parent.left;
+      if (gparent.right === p1.parent) gparent.right = p1.parent.left;
+    }
+
+    this.checkCircle(p0);
+    this.checkCircle(p2);
+  }
 
   lookup(x) {
     let par = this.root;
@@ -182,15 +217,15 @@ export default class VBeachline {
     let p = left.site;
     let r = right.site;
 
-    let dp = 2 * (p.y - y);
+    let dp = 2 * (y - p.y);
     let a1 = 1 / dp;
     let b1 = -2 * p.x / dp;
     let c1 = y + dp / 4 + p.x * p.x / dp;
 
-    dp = 2 * (r.y - y);
+    dp = 2 * (y - r.y);
     let a2 = 1 / dp;
     let b2 = -2 * r.x / dp;
-    let c2 = this.ly + dp / 4 + r.x * r.x / dp;
+    let c2 = -this.ly + dp / 4 + r.x * r.x / dp;
 
     let a = a1 - a2;
     let b = b1 - b2;
@@ -201,13 +236,14 @@ export default class VBeachline {
     let x2 = (-b - Math.sqrt(disc)) / (2 * a);
 
     let ry;
-    if (p.y < r.y) ry = Math.max(x1, x2);
+    if (p.y > r.y) ry = Math.max(x1, x2);
     else ry = Math.min(x1, x2);
 
     return ry;
   }
 
   checkCircle(par) {
+    console.log("checking circle", par);
     let leftParent = VParabola.getLeftParent(par);
     let rightParent = VParabola.getRightParent(par);
 
@@ -228,7 +264,7 @@ export default class VBeachline {
       return;
     }
 
-    let event = new VEvent({ x: s.x, y: s.y - d }, false);
+    let event = new VEvent(new Point(s.x, d - s.y), false);
     this.points.push(event.point);
     par.circleEvent = event;
     event.arc = par;
@@ -245,7 +281,7 @@ export default class VBeachline {
       mx = Math.min(0, n.edge.start.x - 10);
     }
 
-    let end = { x: mx, y: mx * n.edge.f + n.edge.g };
+    let end = new Point(mx, mx * n.edge.f + n.edge.g);
     n.edge.end = end;
     this.points.push(end);
 
